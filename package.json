@@ -9,20 +9,19 @@
   },
   "author": "Dave Gray",
   "license": "ISC",
-  
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "date-fns": "^2.23.0",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
-    "uuid": "^8.3.2",
-    "body-parser": "^1.20.2",
     "mongodb": "^5.7.0",
     "mongofb": "^1.0.1",
-    "mongoose": "^7.3.2"
+    "mongoose": "^7.3.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"
