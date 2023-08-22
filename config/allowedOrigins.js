@@ -4,7 +4,9 @@ const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1',
     'https://create-react-app-git-main-mroczkap.vercel.app',
-    'http://localhost'
+    'http://localhost',
+    'https://react-tenis.vercel.app',
+    'https://react-tenis.vercel.app/'
 ];
 
 module.exports = allowedOrigins;
