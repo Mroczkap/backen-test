@@ -1,47 +1,42 @@
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const { MongoClient } = require("mongodb");
 
+const handleRefreshToken = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.sendStatus(401);
+  const refreshToken = cookies.jwt;
 
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+  const mongoClient = await new MongoClient(
+    process.env.MONGODB_URI,
+    {}
+  ).connect();
+  const db = mongoClient.db("data");
+  const collection = db.collection("users");
+  const results = await collection
+    .find({ refreshToken: refreshToken })
+    .toArray();
 
-const handleRefreshToken = (req, res) => {
-    const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
-    const refreshToken = cookies.jwt;
+  if (results.length == 0) return res.sendStatus(403);
 
-
-
-const pathToJson = require.resolve('../model/users.json');
-delete require.cache[pathToJson];
-const usersDB = {
-    
-    users: require('../model/users.json'),
-    setUsers: function (data) { this.users = data }
-    }
-
-   
-    const foundUser = usersDB.users.find(person => person.refreshToken == refreshToken);
-   
-    if (!foundUser) return res.sendStatus(403); //Forbidden 
-    // evaluate jwt 
-    jwt.verify(
-        refreshToken,
-        process.env.REFRESH_TOKEN_SECRET,
-        (err, decoded) => {
-            if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
-            const roles = Object.values(foundUser.roles);
-            const accessToken = jwt.sign(
-                {
-                    "UserInfo": {
-                        "username": decoded.username,
-                        "roles": roles
-                    }
-                },
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '30s' }
-            );
-            res.json({roles, accessToken })
-        }
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+    if (err || results[0].username !== decoded.username)
+      return res.sendStatus(403);
+    const roles = Object.values(results[0].roles);
+    const accessToken = jwt.sign(
+      {
+        UserInfo: {
+          username: decoded.username,
+          roles: roles,
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "30s" }
     );
-}
+    res.json({ roles, accessToken });
+  });
 
-module.exports = { handleRefreshToken }
+  mongoClient.close();
+};
+
+module.exports = { handleRefreshToken };
