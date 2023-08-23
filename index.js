@@ -9,11 +9,11 @@ const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
 const credentials = require("./middleware/credentials");
 const PORT = 4000;
-
+const bodyParser = require("body-parser");
 
 // custom middleware logger
 app.use(logger);
-
+app.use(bodyParser.json());
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
 app.use(credentials);
@@ -49,6 +49,8 @@ app.use("/groups", require("./routes/groups"));
 app.use("/roundMatch", require("./routes/roundMatch"));
 app.use("/wyniki", require("./routes/wyniki"));
 app.use("/zawodnicy", require("./routes/zawodnicy"));
+app.use("/saveGroupmatch", require("./routes/saveGroupmatch"));
+app.use("/finishgroup", require("./routes/finishgroup"));
 
 app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
