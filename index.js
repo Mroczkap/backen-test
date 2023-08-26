@@ -51,6 +51,8 @@ app.use("/wyniki", require("./routes/wyniki"));
 app.use("/zawodnicy", require("./routes/zawodnicy"));
 app.use("/saveGroupmatch", require("./routes/saveGroupmatch"));
 app.use("/finishgroup", require("./routes/finishgroup"));
+app.use("/saveRoundmatch", require("./routes/saveRoundmatch"));
+app.use("/createGame", require("./routes/createGame"));
 
 app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
