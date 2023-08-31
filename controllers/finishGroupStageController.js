@@ -59,9 +59,16 @@ const handleFinish = async (req, res) => {
     console.log(groupOut);
     console.log(groupNo);
     // console.log(gru);
+    let integerValue;
 
     const floatNumber = groupOut / groupNo;
-    const integerValue = Math.trunc(floatNumber) + 1;
+    if(Number.isInteger(floatNumber)){
+        integerValue = 0;
+    }
+    else{
+        integerValue = Math.trunc(floatNumber);
+    }
+   
     console.log(integerValue);
 
     gru.forEach((subarray) => {
@@ -105,9 +112,9 @@ const handleFinish = async (req, res) => {
     //console.log("test", result[0]);
 
     result.forEach((item) => {
-      if (item.miejsce === integerValue) {
+      if (item.miejsce === integerValue + 1) {
         console.log("mscs", item.miejsce);
-        const granica = result[integerValue - 1].items;
+        const granica = result[integerValue].items;
         granica.sort((a, b) => {
           if (a.wygrane !== b.wygrane) {
             return b.wygrane - a.wygrane;
