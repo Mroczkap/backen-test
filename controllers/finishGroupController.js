@@ -56,7 +56,7 @@ const handleFinish = async (req, res) => {
               idmeczu: nextmatch,
               round: "1/8",
             },
-            { $set: { player2id: wynik.id, player2sets: 0 } }
+            { $set: { player2id: wynik.id, player2sets: 0, saved: false, player1sets: 0 } }
           );
         } else {
           await db.collection("mecze").findOneAndUpdate(
@@ -65,7 +65,7 @@ const handleFinish = async (req, res) => {
               idmeczu: nextmatch,
               round: "1/8",
             },
-            { $set: { player1id: wynik.id, player1sets: 0 } }
+            { $set: { player1id: wynik.id, player1sets: 0, saved: false, player2sets: 0 } }
           );
         }
       })
