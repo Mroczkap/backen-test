@@ -6,7 +6,7 @@ const handleSave = async (req, res) => {
     console.log("no jestem")
     const mongoClient = await new MongoClient(
       process.env.MONGODB_URI,
-      {}
+      {useNewUrlParser: true}
     ).connect();
       console.log("body", req.body)
     const db = mongoClient.db("zawody");
@@ -33,7 +33,7 @@ const handleSave = async (req, res) => {
     console.log("sumaW", wynikiGrupy)
     await podliczWynikiGrupy(wynikiGrupy, idgr, db, mecze);
 
-    mongoClient.close();
+    mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

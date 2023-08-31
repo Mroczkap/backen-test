@@ -1,7 +1,6 @@
-
 const { ObjectId } = require("mongodb");
 
-const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze) => {
+const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
   wynikiGrupy.sort((a, b) => {
     if (b.wygrane - a.wygrane < 0) {
       return -1;
@@ -38,6 +37,7 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze) => {
 
   wynikiGrupy.map((wynik, index) => {
     wynik.miejsce = index + 1;
+    wynik.grupid = grupid;
   });
 
   const wygrane = [];
@@ -51,8 +51,7 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze) => {
     zawodnicy.push(wynik.id);
   });
 
-  console.log("WWWW", wygrane, zawodnicy)
-
+  console.log("WWWW", wygrane, zawodnicy);
   await db.collection("grupy").findOneAndUpdate(
     { _id: new ObjectId(id) },
     {
@@ -64,7 +63,7 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze) => {
       },
     }
   );
-
+  console.log("dobiel");
   return wynikiGrupy;
 };
 
@@ -72,11 +71,11 @@ const podliczMecz = (wynikiGrupy, mecz) => {
   const temp = [
     {
       id: mecz.player1id,
-      set: mecz.player1sets,
+      set: mecz.player1sets - mecz.player2sets,
     },
     {
       id: mecz.player2id,
-      set: mecz.player2sets,
+      set: mecz.player2sets - mecz.player1sets,
     },
   ];
 
@@ -84,14 +83,14 @@ const podliczMecz = (wynikiGrupy, mecz) => {
     const foundObject = wynikiGrupy.find((item) => item.id.equals(t.id));
 
     if (foundObject) {
-      if (t.set == 3) {
+      if (t.set > 0) {
         foundObject.wygrane++;
-        foundObject.sety += 3;
+        foundObject.sety += t.set;
       } else {
         foundObject.sety += t.set;
       }
     } else {
-      if (t.set == 3) {
+      if (t.set > 0) {
         wynikiGrupy.push({
           id: t.id,
           wygrane: 1,
@@ -110,17 +109,25 @@ const podliczMecz = (wynikiGrupy, mecz) => {
 };
 
 const outFromGroup = (groupId, miejsce) => {
-    const do18 = [
-      [1, 8, 9, 16],
-      [8, 1, 16, 9],
-      [6, 3, 14, 11],
-      [3, 6, 11, 14],
-      [4, 5, 12, 13],
-      [5, 4, 13, 12],
-      [2, 7, 10, 15],
-      [7, 2, 15, 10],
-    ];
-    return do18[groupId][miejsce];
-  }
+  const do18 = [
+    [1, 8, 9, 16],
+    [8, 1, 16, 9],
+    [6, 3, 14, 11],
+    [3, 6, 11, 14],
+    [4, 5, 12, 13],
+    [5, 4, 13, 12],
+    [2, 7, 10, 15],
+    [7, 2, 15, 10],
+  ];
+  return do18[groupId][miejsce];
+};
 
-module.exports = {podliczMecz, podliczWynikiGrupy, outFromGroup}
+const outFromGroup2 = (miejsce) => {
+  const out16 = [
+    1, 8, 3, 5, 6, 4, 7, 2, 2, 7, 4, 6, 5, 3, 8, 1, 
+    9, 16, 11, 13, 14, 12, 15, 10, 10, 15, 12, 14, 13, 11, 16, 9,
+  ];
+  return out16[miejsce];
+};
+
+module.exports = { podliczMecz, podliczWynikiGrupy, outFromGroup,outFromGroup2 };

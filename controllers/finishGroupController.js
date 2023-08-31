@@ -9,7 +9,7 @@ const handleFinish = async (req, res) => {
   try {
     const mongoClient = await new MongoClient(
       process.env.MONGODB_URI,
-      {}
+      {useNewUrlParser: true}
     ).connect();
 
     const idzawodow = req.query.idzawodow;
@@ -26,8 +26,12 @@ const handleFinish = async (req, res) => {
     mecze.map((mecz) => {
       wynikiGrupy = podliczMecz(wynikiGrupy, mecz);
 
-      if (mecz.player1sets != 3 && mecz.player2sets != 3)
-        res.status(203).json(res);
+      if (mecz.player1sets != 3 && mecz.player2sets != 3){
+        console.log("jestem", mecz)
+      mongoClient.close(true);  
+      res.status(203).json(res);
+      }
+        
     });
 
     wynikiGrupy = await podliczWynikiGrupy(wynikiGrupy, id, db, mecze);
@@ -67,7 +71,7 @@ const handleFinish = async (req, res) => {
       })
     );
 
-    mongoClient.close();
+    mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

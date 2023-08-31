@@ -36,7 +36,7 @@ const handleRefreshToken = async (req, res) => {
     res.json({ roles, accessToken });
   });
 
-  mongoClient.close();
+  mongoClient.close(true);
 };
 
 module.exports = { handleRefreshToken };

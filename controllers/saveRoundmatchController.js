@@ -10,7 +10,7 @@ const handleSave = async (req, res) => {
   try {
     const mongoClient = await new MongoClient(
       process.env.MONGODB_URI,
-      {}
+      {useNewUrlParser: true}
     ).connect();
 
     /* 
@@ -136,7 +136,7 @@ const handleSave = async (req, res) => {
       }
     }
 
-   mongoClient.close();
+   mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");
@@ -147,7 +147,7 @@ const handleFree = async (req, res) => {
   try {
     const mongoClient = await new MongoClient(
       process.env.MONGODB_URI,
-      {}
+      {useNewUrlParser: true}
     ).connect();
 
     /* 
@@ -232,7 +232,7 @@ const handleFree = async (req, res) => {
       { $set: { saved: true } }
     );
 
-    mongoClient.close();
+    mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

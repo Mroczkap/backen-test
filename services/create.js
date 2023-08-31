@@ -1,7 +1,7 @@
 const createGroups = (groupsno, contestno, zawodnicy) => {
   let x = contestno; // liczba zawodników
   let y = groupsno; // liczba grup
-
+  console.log("UUUUU",contestno, zawodnicy)
   let wynik;
   const groups = [];
   //pętlna dla y grup
@@ -9,7 +9,7 @@ const createGroups = (groupsno, contestno, zawodnicy) => {
     const grupa = [];
 
     grupa.push(zawodnicy[i - 1]._id);
-    for (let j = 2; j < y + 2; j++) {
+    for (let j = 2; j <= x; j++) {
       if (j % 2 == 0) {
         wynik = j * y - i + 1;
         if (wynik > x) break;
@@ -24,6 +24,7 @@ const createGroups = (groupsno, contestno, zawodnicy) => {
     }
     groups.push(grupa);
   }
+  console.log("UUUUU@", groups)
   return groups;
 };
 

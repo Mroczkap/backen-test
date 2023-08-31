@@ -4,7 +4,7 @@ const handleWyniki = async (req, res) => {
   try {
     const mongoClient = await new MongoClient(
       process.env.MONGODB_URI,
-      {}
+      {useNewUrlParser: true}
     ).connect();
     const db = mongoClient.db("zawody");
     const collection = db.collection("wyniki");
@@ -24,7 +24,7 @@ const handleWyniki = async (req, res) => {
       }
     });
 
-    mongoClient.close();
+    mongoClient.close(true);
     res.status(200).json(wyniki);
   } catch (e) {
     res.send("Somethnig went wrong");

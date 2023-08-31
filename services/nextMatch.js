@@ -104,7 +104,7 @@ const saveResults = async (db, idzawodnika, miejsce, idzawodow) => {
     { $set: { idzawodnika: idzawodnika } }
   );
 
-  console.log("resulllllt", result);
+  return result
 };
 
 module.exports = {

@@ -6,7 +6,7 @@ const hanldeGroups = async (req, res) => {
     const groupsid = [];
     const mongoClient = await new MongoClient(
       process.env.MONGODB_URI,
-      {}
+      {useNewUrlParser: true}
     ).connect();
 
     const db = mongoClient.db("zawody");
@@ -47,7 +47,7 @@ const hanldeGroups = async (req, res) => {
     });
 
     wyn.push(grupy, mecze);
-    mongoClient.close();
+    mongoClient.close(true);
     res.status(200).json(wyn);
   } catch (e) {
     res.send("Somethnig went wrong");
