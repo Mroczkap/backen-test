@@ -3,14 +3,15 @@ const {
   podliczMecz,
   podliczWynikiGrupy,
   outFromGroup2,
+  outFromGroup3,
+  outFromGroup4,
 } = require("../services/counting");
 
 const handleFinish = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
+    const mongoClient = await new MongoClient(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+    }).connect();
 
     const idzawodow = req.query.idzawodow;
     const groupOut = req.body[0];
@@ -62,13 +63,12 @@ const handleFinish = async (req, res) => {
     let integerValue;
 
     const floatNumber = groupOut / groupNo;
-    if(Number.isInteger(floatNumber)){
-        integerValue = 0;
+    if (Number.isInteger(floatNumber)) {
+      integerValue = 99;
+    } else {
+      integerValue = Math.trunc(floatNumber);
     }
-    else{
-        integerValue = Math.trunc(floatNumber);
-    }
-   
+
     console.log(integerValue);
 
     gru.forEach((subarray) => {
@@ -138,30 +138,53 @@ const handleFinish = async (req, res) => {
         });
       }
     });
-    // Close the client and send success response
     console.log("ide sobie w pizud");
     console.log("wynkoncowy", wynikKoncowy);
 
-    if (wynikKoncowy.length < 32) {
-      const wolne = 32 - wynikKoncowy.length;
+    let max;
+    let runda;
+
+    if (wynikKoncowy.length <= 8) {
+      max = 8;
+      runda = '1/2'
+    } else if (wynikKoncowy.length <= 16) {
+      max = 16;
+      runda = '1/4'
+    } else {
+      max = 32;
+      runda = '1/8'
+    }
+    console.log("runda", runda)
+    console.log("max", max);
+
+    if (wynikKoncowy.length < max) {
+      const wolne = max - wynikKoncowy.length;
       for (let i = 0; i < wolne; i++) {
-        wynikKoncowy.push(
-          new ObjectId("64d6154e509bb85987990033"),
-        );
+        wynikKoncowy.push(new ObjectId("64d6154e509bb85987990033"));
       }
     }
+
+      console.log("wk after los", wynikKoncowy)
 
     await Promise.all(
       wynikKoncowy.map(async (id, index) => {
         console.log(".......", id, index);
-        const nextmatch = outFromGroup2(index);
+        let nextmatch;
+        if(max === 32){
+         nextmatch = outFromGroup2(index);
+        }else if( max === 16){
+          nextmatch = outFromGroup3(index);
+        }else if(max === 8 ){
+          nextmatch = outFromGroup4(index);
+        }
+
         console.log(nextmatch);
         if (index % 2 == 0) {
           await db.collection("mecze").findOneAndUpdate(
             {
               idzawodow: new ObjectId(idzawodow),
               idmeczu: nextmatch,
-              round: "1/8",
+              round: runda,
             },
             { $set: { player2id: id, player2sets: 0 } }
           );
@@ -170,7 +193,7 @@ const handleFinish = async (req, res) => {
             {
               idzawodow: new ObjectId(idzawodow),
               idmeczu: nextmatch,
-              round: "1/8",
+              round: runda,
             },
             { $set: { player1id: id, player1sets: 0 } }
           );
