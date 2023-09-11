@@ -1,4 +1,7 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
+const database = require("../services/db");
+const db = database.client.db('zawody')
+
 const {
   podliczMecz,
   podliczWynikiGrupy,
@@ -9,9 +12,9 @@ const { saveResults } = require("../services/nextMatch");
 
 const handleFinish = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-    }).connect();
+    // const mongoClient = await new MongoClient(process.env.MONGODB_URI, {
+    //   useNewUrlParser: true,
+    // }).connect();
 
     const idzawodow = req.query.idzawodow;
     console.log("idzaw", idzawodow)
@@ -21,7 +24,7 @@ const handleFinish = async (req, res) => {
     const nrgrupy = req.body[1];
     let wynikiGrupy = [];
 
-    const db = mongoClient.db("zawody");
+    // const db = mongoClient.db("zawody");
     const mecze = await db
       .collection("mecze")
       .find({ idgrupy: new ObjectId(id) })
@@ -30,11 +33,11 @@ const handleFinish = async (req, res) => {
     mecze.map((mecz) => {
       wynikiGrupy = podliczMecz(wynikiGrupy, mecz);
 
-      // if (mecz.player1sets != 3 && mecz.player2sets != 3){
-      //   console.log("jestem", mecz)
+      if (mecz.player1sets != 3 && mecz.player2sets != 3){
+        console.log("jestem", mecz)
       // mongoClient.close(true);
-      // res.status(203).json(res);
-      // }
+      res.status(203).json(res);
+      }
     });
 
     wynikiGrupy = await podliczWynikiGrupy(wynikiGrupy, id, db, mecze);
@@ -97,7 +100,7 @@ const handleFinish = async (req, res) => {
       );
     }
 
-    mongoClient.close(true);
+    // mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

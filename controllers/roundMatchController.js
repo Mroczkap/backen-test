@@ -1,20 +1,23 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const {ObjectId } = require("mongodb");
+const database = require("../services/db");
+const db = database.client.db('zawody')
+const db2 = database.client.db('druzyna')
 
 const handleRoundMatch = async (req, res) => {
   try {
    
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
     const idzawodow = req.query.idzawodow;
-    const db = mongoClient.db("zawody");
+    // const db = mongoClient.db("zawody");
     const mecze = await db
       .collection("mecze")
       .find({ idzawodow: new ObjectId(idzawodow) })
       .sort({ idmeczu: 1 })
       .toArray();
-    const db2 = mongoClient.db("druzyna");
+    // const db2 = mongoClient.db("druzyna");
     const zawodniki = await db2.collection("zawodnik").find({}).toArray();
     //podmiana id na imie i nazwisko w meczach 
     mecze.map((mecz) => {
@@ -33,7 +36,7 @@ const handleRoundMatch = async (req, res) => {
     const connections = serverStatus.connections;
     console.log('Number of open connections:', connections.current);
         
-    mongoClient.close(true);
+    // mongoClient.close(true);
 
     const adminDb2 = mongoClient.db('admin');
     const serverStatus2 = await adminDb2.command({ serverStatus: 1 });

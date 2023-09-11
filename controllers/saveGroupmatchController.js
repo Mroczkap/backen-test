@@ -1,15 +1,18 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const {ObjectId } = require("mongodb");
 const {podliczMecz, podliczWynikiGrupy} = require("../services/counting")
+const database = require("../services/db");
+const db = database.client.db('zawody')
+
 
 const handleSave = async (req, res) => {
   try {
     console.log("no jestem")
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
       console.log("body", req.body)
-    const db = mongoClient.db("zawody");
+    // const db = mongoClient.db("zawody");
     let id = req.body[0].toString();
     await db
       .collection("mecze")
@@ -33,7 +36,7 @@ const handleSave = async (req, res) => {
     console.log("sumaW", wynikiGrupy)
     await podliczWynikiGrupy(wynikiGrupy, idgr, db, mecze);
 
-    mongoClient.close(true);
+    // mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

@@ -1,12 +1,14 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
+const database = require("../services/db");
+const db = database.client.db('druzyna')
 
 const getAllZawodnicy = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
-    const db = mongoClient.db("druzyna");
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
+    // const db = mongoClient.db("druzyna");
     const collection = db.collection("zawodnik");
     const results = await collection
       .find({ usuniety: false })
@@ -14,7 +16,7 @@ const getAllZawodnicy = async (req, res) => {
       .toArray();
 
     res.status(200).json(results);
-    mongoClient.close(true);
+    // mongoClient.close(true);
   } catch (e) {
     res.send("Somethnig went wrong");
   }
@@ -22,11 +24,11 @@ const getAllZawodnicy = async (req, res) => {
 
 const createNewZawodnik = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
-    const db = mongoClient.db("druzyna");
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
+    // const db = mongoClient.db("druzyna");
 
     await db.collection("zawodnik").insertOne({
       imie: req.body.firstname,
@@ -39,7 +41,7 @@ const createNewZawodnik = async (req, res) => {
     });
     res.status(200).json(res);
 
-    mongoClient.close(true);
+    // mongoClient.close(true);
   } catch (e) {
     res.send("Somethnig went wrong");
   }
@@ -47,11 +49,11 @@ const createNewZawodnik = async (req, res) => {
 
 const updateZawodnik = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
-    const db = mongoClient.db("druzyna");
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
+    // const db = mongoClient.db("druzyna");
 
     await db.collection("zawodnik").findOneAndUpdate(
       { _id: new ObjectId(req.query.id) },
@@ -66,7 +68,7 @@ const updateZawodnik = async (req, res) => {
         },
       }
     );
-    mongoClient.close(true);
+    // mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");
@@ -75,11 +77,11 @@ const updateZawodnik = async (req, res) => {
 
 const deleteZawodnik = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
-    const db = mongoClient.db("druzyna");
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
+    // const db = mongoClient.db("druzyna");
     let id = req.query.id;
     await db
       .collection("zawodnik")
@@ -87,7 +89,7 @@ const deleteZawodnik = async (req, res) => {
         { _id: new ObjectId(id) },
         { $set: { usuniety: true } }
       );
-    mongoClient.close(true);
+    // mongoClient.close(true);
     res.status(203).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

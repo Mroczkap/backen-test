@@ -54,6 +54,7 @@ const createGroupMatches = async (db, groups, idzawodow) => {
         for (let i = 0; i < group.length; i++) {
           for (let j = i + 1; j < group.length; j++) {
             await db.collection("mecze").insertOne({
+              idzawodow: idzawodow,
               idgrupy: result.insertedId,
               player1id: group[i],
               player2id: group[j],

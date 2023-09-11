@@ -1,4 +1,8 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const {ObjectId } = require("mongodb");
+
+const database = require("../services/db");
+const db = database.client.db('zawody')
+
 const {
   player1nextMatch,
   player2nextMatch,
@@ -8,10 +12,10 @@ const {
 
 const handleSave = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
 
     /* 
     req.body:
@@ -25,7 +29,7 @@ const handleSave = async (req, res) => {
     [7] idzawodów
     [8] nrmeczu
     */
-    const db = mongoClient.db("zawody");
+    // const db = mongoClient.db("zawody");
     const collecion = db.collection("mecze");
     let id = req.body[0].toString();
     await collecion.findOneAndUpdate(
@@ -136,7 +140,7 @@ const handleSave = async (req, res) => {
       }
     }
 
-   mongoClient.close(true);
+  //  mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");
@@ -145,10 +149,10 @@ const handleSave = async (req, res) => {
 
 const handleFree = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(
-      process.env.MONGODB_URI,
-      {useNewUrlParser: true}
-    ).connect();
+    // const mongoClient = await new MongoClient(
+    //   process.env.MONGODB_URI,
+    //   {useNewUrlParser: true}
+    // ).connect();
 
     /* 
     req.body:
@@ -162,7 +166,7 @@ const handleFree = async (req, res) => {
     [7] idzawodów
     [8] nrmeczu
     */
-    const db = mongoClient.db("zawody");
+    // const db = mongoClient.db("zawody");
     const collecion = db.collection("mecze");
 
     let runda = req.body[4].toString();
@@ -232,7 +236,7 @@ const handleFree = async (req, res) => {
       { $set: { saved: true } }
     );
 
-    mongoClient.close(true);
+    // mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");

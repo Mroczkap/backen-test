@@ -20,7 +20,7 @@ app.use(credentials);
 
 // Cross Origin Resource Sharing
 app.use(cors(corsOptions));
-
+// require('./services/db');
 // app.use((req, res, next) => {
 //   res.header('Access-Control-Allow-Origin', '*');
 //   next();
@@ -54,6 +54,7 @@ app.use("/finishgroup", require("./routes/finishgroup"));
 app.use("/saveRoundmatch", require("./routes/saveRoundmatch"));
 app.use("/createGame", require("./routes/createGame"));
 app.use("/finishgroupstage", require("./routes/finishgroupstage"));
+app.use("/rankings", require("./routes/rankings"));
 
 
 app.use(verifyJWT);

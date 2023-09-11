@@ -1,4 +1,4 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const {
   createGroups,
   createGroupMatches,
@@ -6,16 +6,20 @@ const {
   createResults,
 } = require("../services/create");
 
+const database = require("../services/db");
+const db = database.client.db('druzyna')
+const db2 = database.client.db('zawody')
+
 
 const handleCreate = async (req, res) => {
   try {
-    const mongoClient = await new MongoClient(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-    }).connect();
+    // const mongoClient = await new MongoClient(process.env.MONGODB_URI, {
+    //   useNewUrlParser: true,
+    // }).connect();
     console.log(req.body);
 
-    const db = mongoClient.db("druzyna");
-    const db2 = mongoClient.db("zawody");
+    // const db = mongoClient.db("druzyna");
+    // const db2 = mongoClient.db("zawody");
 
     // console.log(req.body.zawodnicy);
     // console.log(req.body.selectedGroup);

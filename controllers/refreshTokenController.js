@@ -1,17 +1,19 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const { MongoClient } = require("mongodb");
+
+const database = require("../services/db");
+const db = database.client.db('data')
 
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.jwt) return res.sendStatus(401);
   const refreshToken = cookies.jwt;
 
-  const mongoClient = await new MongoClient(
-    process.env.MONGODB_URI,
-    {}
-  ).connect();
-  const db = mongoClient.db("data");
+  // const mongoClient = await new MongoClient(
+  //   process.env.MONGODB_URI,
+  //   {}
+  // ).connect();
+  // const db = mongoClient.db("data");
   const collection = db.collection("users");
   const results = await collection
     .find({ refreshToken: refreshToken })
@@ -36,7 +38,7 @@ const handleRefreshToken = async (req, res) => {
     res.json({ roles, accessToken });
   });
 
-  mongoClient.close(true);
+  // mongoClient.close(true);
 };
 
 module.exports = { handleRefreshToken };
