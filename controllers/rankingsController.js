@@ -100,7 +100,7 @@ const handleAdd = async (req, res) => {
             $inc: {
               sets: item.sets,
               winsets: item.winsets,
-              match: 1,
+              match: item.match,
               winmatch: item.winmatch,
               tournaments: 1
             },
