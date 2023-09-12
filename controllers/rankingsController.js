@@ -149,7 +149,7 @@ const handleShow = async (req, res) => {
       item.matchpercent = item.winmatch/item.match;
     })
 
-    const sorted = sortByProperty(ranking, 'matchpercent', false);
+    const sorted = sortByProperty(ranking, 'matchpercent', 'setspercent', false);
     res.status(200).json(sorted);
   } catch (e) {
     res.send("Somethnig went wrong");
