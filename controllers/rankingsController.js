@@ -12,16 +12,16 @@ const handleAdd = async (req, res) => {
     //   useNewUrlParser: true,
     // }).connect();
     const { idzawodow, idrankingu } = req.body;
-    console.log("id rankingu", idrankingu)
+    //onsole.log("id rankingu", idrankingu)
     // const db2 = mongoClient.db("druzyna");
 
     const ranking = await db2
       .collection("rankingi")
       .find({ _id: new ObjectId(idrankingu) })
       .toArray();
-    console.log("rankign", ranking)
+   // console.log("rankign", ranking)
     const turnieje = ranking[0].turnieje;
-    console.log("turnije", turnieje)
+  //  console.log("turnije", turnieje)
     const index = turnieje.indexOf(idzawodow);
 
     if (index !== -1) {
@@ -44,7 +44,7 @@ const handleAdd = async (req, res) => {
       .toArray();
 
     let result = [];
-    console.log(mecze);
+    //console.log(mecze);
 
     mecze.map((mecz) => {
       const sety = mecz.player1sets + mecz.player2sets;
@@ -53,7 +53,7 @@ const handleAdd = async (req, res) => {
       let p2 = 0;
 
       mecz.player1sets === 3 ? (p1 = 1) : (p2 = 1);
-      console.log(sety, p1, p2);
+      //console.log(sety, p1, p2);
       result = addtorankingarray(
         result,
         mecz.player1id,
@@ -74,12 +74,12 @@ const handleAdd = async (req, res) => {
     const collection = db2.collection("ranks");
     await Promise.all(
       result.map(async (item) => {
-        console.log("Mapping..."); //
+      //  console.log("Mapping..."); //
         const filter = {
           playerid: new ObjectId(item.playerid),
           rankingid: new ObjectId(idrankingu),
         };
-        console.log(filter);
+       // console.log(filter);
         const rank = await collection.findOne(filter);
 
         const field = {
@@ -92,8 +92,8 @@ const handleAdd = async (req, res) => {
           tournaments: 1
         };
 
-        console.log("field", field);
-        console.log("rank", rank);
+     //   console.log("field", field);
+     //   console.log("rank", rank);
 
         if (rank) {
           await collection.findOneAndUpdate(filter, {
@@ -111,7 +111,7 @@ const handleAdd = async (req, res) => {
       })
     );
 
-    console.log("ranking", result);
+   // console.log("ranking", result);
 
     res.status(200).json(res);
   } catch (e) {
@@ -125,7 +125,7 @@ const handleShow = async (req, res) => {
     //   useNewUrlParser: true,
     // }).connect();
     const idrankingu  = req.query.idrankingu;
-    console.log("id rankingu", idrankingu)
+  //  console.log("id rankingu", idrankingu)
     
     // const db = mongoClient.db("druzyna");
     const zawodniki = await db2.collection("zawodnik").find({}).toArray();
@@ -136,7 +136,7 @@ const handleShow = async (req, res) => {
       .collection("ranks")
       .find({ rankingid: new ObjectId(idrankingu) })
       .toArray();
-    console.log("rankign", ranking)
+   // console.log("rankign", ranking)
     let index =1;
     ranking.map((item)=> {
 
@@ -156,4 +156,18 @@ const handleShow = async (req, res) => {
   }
 };
 
-module.exports = { handleAdd, handleShow };
+const handleList = async (req, res) => {
+  try {
+    const collection = db2.collection("rankingi");
+    const results = await collection
+      .find({ })
+      .sort({ _id: 1})
+      .toArray();
+    console.log("hmm", results)
+    res.status(200).json(results);
+  } catch (e) {
+    res.send("Somethnig went wrong");
+  }
+};
+
+module.exports = { handleAdd, handleShow,handleList };
