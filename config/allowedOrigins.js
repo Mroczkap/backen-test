@@ -9,7 +9,8 @@ const allowedOrigins = [
     'https://react-tenis.vercel.app/',
     'http://192.168.68.132:3000',
     'https://tabletenis.vercel.app/',
-    'https://tabletenis.vercel.app'
+    'https://tabletenis.vercel.app',
+    'https://kobi-cup.vercel.app'
 
 ];
 
