@@ -1,7 +1,8 @@
 const { ObjectId } = require("mongodb");
 const database = require("../services/db");
 const db = database.client.db('zawody')
-
+require("dotenv").config();
+const {getFree} = require('../services/free')
 const {
   podliczMecz,
   podliczWynikiGrupy,
@@ -23,6 +24,7 @@ const handleFinish = async (req, res) => {
     const id = req.body[0].toString();
     const nrgrupy = req.body[1];
     let wynikiGrupy = [];
+    const free = await getFree();
 
     // const db = mongoClient.db("zawody");
     const mecze = await db
@@ -46,7 +48,7 @@ const handleFinish = async (req, res) => {
         const wolne = 4 - wynikiGrupy.length;
         for (let i = 0; i < wolne; i++) {
           wynikiGrupy.push({
-            id: new ObjectId("64d6154e509bb85987990033"),
+            id: free,
             miejsce: 4 - i,
           });
         }

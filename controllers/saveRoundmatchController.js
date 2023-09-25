@@ -1,8 +1,8 @@
 const {ObjectId } = require("mongodb");
-
+require("dotenv").config();
 const database = require("../services/db");
 const db = database.client.db('zawody')
-
+const {getFree} = require('../services/free')
 const {
   player1nextMatch,
   player2nextMatch,
@@ -168,21 +168,27 @@ const handleFree = async (req, res) => {
     */
     // const db = mongoClient.db("zawody");
     const collecion = db.collection("mecze");
-
+    const free = await getFree();
+    const stringFree = free.toString(); 
     let runda = req.body[4].toString();
 
     const nextmatch = selectRound(runda, req.body[8]);
-
+    if(req.body[5] == stringFree ||
+      req.body[6] == stringFree)
+      {
+        console.log("zczytało odpowienio", free)
+      }
     console.log("co zawraca mecze", nextmatch);
     const human =
-      req.body[5] == "64d6154e509bb85987990033" ? req.body[6] : req.body[5];
+      req.body[5] == stringFree ? req.body[6] : req.body[5];
     console.log("human", human);
 
     if (
-      (req.body[5] == "64d6154e509bb85987990033" ||
-        req.body[6] == "64d6154e509bb85987990033") &&
+      (req.body[5] == stringFree ||
+        req.body[6] == stringFree) &&
       nextmatch[0] == 1
     ) {
+
       await player1nextMatch(
         collecion,
         new ObjectId(req.body[7]),
@@ -195,13 +201,13 @@ const handleFree = async (req, res) => {
         new ObjectId(req.body[7]),
         nextmatch[2],
         runda,
-        new ObjectId("64d6154e509bb85987990033")
+        free
       );
     }
 
     if (
-      (req.body[5] == "64d6154e509bb85987990033" ||
-        req.body[6] == "64d6154e509bb85987990033") &&
+      (req.body[5] == stringFree ||
+        req.body[6] == stringFree) &&
       nextmatch[0] == 2
     ) {
       await player2nextMatch(
@@ -216,7 +222,7 @@ const handleFree = async (req, res) => {
         new ObjectId(req.body[7]),
         nextmatch[2],
         runda,
-        new ObjectId("64d6154e509bb85987990033")
+        free
       );
     }
 

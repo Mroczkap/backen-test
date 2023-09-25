@@ -11,6 +11,7 @@ const handleRoundMatch = async (req, res) => {
     //   {useNewUrlParser: true}
     // ).connect();
     const idzawodow = req.query.idzawodow;
+
     // const db = mongoClient.db("zawody");
     const mecze = await db
       .collection("mecze")
@@ -31,18 +32,9 @@ const handleRoundMatch = async (req, res) => {
       }
     });
 
-    const adminDb = mongoClient.db('admin');
-    const serverStatus = await adminDb.command({ serverStatus: 1 });
-    const connections = serverStatus.connections;
-    console.log('Number of open connections:', connections.current);
-        
-    // mongoClient.close(true);
 
-    const adminDb2 = mongoClient.db('admin');
-    const serverStatus2 = await adminDb2.command({ serverStatus: 1 });
-    const connections2 = serverStatus2.connections;
-    console.log('Number of open connections:', connections2.current);
-    
+
+        
     res.status(200).json(mecze);
   } catch (e) {
     res.send("Somethnig went wrong");

@@ -52,7 +52,7 @@ const handleCreate = async (req, res) => {
       // Check if value1 is equal to 1
       type = 4; // stały jedna grupa każdy-z-każdym
     } else {
-      type = 3; // grupowo pucharowy wychodzi 8
+      type = 3; // grupowo pucharowy wychodzi 8 lub  4 
     }
     console.log("type", type);
 

@@ -1,7 +1,8 @@
 const { ObjectId } = require("mongodb");
 const database = require("../services/db");
-const db = database.client.db('zawody')
-
+const db = database.client.db("zawody");
+const {getFree} = require('../services/free')
+require("dotenv").config();
 const {
   podliczMecz,
   podliczWynikiGrupy,
@@ -12,10 +13,9 @@ const {
 
 const handleFinish = async (req, res) => {
   try {
-    // const mongoClient = await new MongoClient(process.env.MONGODB_URI, {
-    //   useNewUrlParser: true,
-    // }).connect();
-
+   
+   
+  
     const idzawodow = req.query.idzawodow;
     const groupOut = req.body[0];
 
@@ -29,7 +29,23 @@ const handleFinish = async (req, res) => {
     console.log("G", grupy);
     const groupNo = grupy.length;
     const gru = [];
+    console.log(groupOut);
+    console.log(groupNo);
+    // console.log(gru);
+    let integerValue;
 
+    const floatNumber = groupOut / groupNo;
+    if (Number.isInteger(floatNumber)) {
+      integerValue = 99;
+    } else {
+      integerValue = Math.trunc(floatNumber);
+    }
+
+    console.log(integerValue);
+    const free = await getFree();
+    
+    
+    
     const asyncTasks = grupy.map(async (grupa) => {
       console.log("grupka", grupa._id);
       const mecze = await db
@@ -46,6 +62,12 @@ const handleFinish = async (req, res) => {
           return res.status(203).json(res);
         }
       });
+     
+
+    
+      
+      // Convert the array of bytes to a string
+     
 
       wynikiGrupy = await podliczWynikiGrupy(
         wynikiGrupy,
@@ -54,25 +76,27 @@ const handleFinish = async (req, res) => {
         mecze,
         grupa.grupid
       );
+      if (integerValue === 99) {
+        let limit;
+        floatNumber === 2 ? (limit = 4) : (limit = 8);
+        if (wynikiGrupy.length < limit) {
+          const wolne = limit - wynikiGrupy.length;
+          for (let i = 0; i < wolne; i++) {
+            wynikiGrupy.push({
+              id: free,
+              miejsce: limit - i,
+            });
+          }
+        }
+      }
+
       return gru.push(wynikiGrupy);
     });
 
     // Wait for all promises to resolve
     await Promise.all(asyncTasks);
 
-    console.log(groupOut);
-    console.log(groupNo);
-    // console.log(gru);
-    let integerValue;
-
-    const floatNumber = groupOut / groupNo;
-    if (Number.isInteger(floatNumber)) {
-      integerValue = 99;
-    } else {
-      integerValue = Math.trunc(floatNumber);
-    }
-
-    console.log(integerValue);
+  
 
     gru.forEach((subarray) => {
       const ile = subarray.length;
@@ -149,35 +173,35 @@ const handleFinish = async (req, res) => {
 
     if (wynikKoncowy.length <= 8) {
       max = 8;
-      runda = '1/2'
+      runda = "1/2";
     } else if (wynikKoncowy.length <= 16) {
       max = 16;
-      runda = '1/4'
+      runda = "1/4";
     } else {
       max = 32;
-      runda = '1/8'
+      runda = "1/8";
     }
-    console.log("runda", runda)
+    console.log("runda", runda);
     console.log("max", max);
 
     if (wynikKoncowy.length < max) {
       const wolne = max - wynikKoncowy.length;
       for (let i = 0; i < wolne; i++) {
-        wynikKoncowy.push(new ObjectId("64d6154e509bb85987990033"));
+        wynikKoncowy.push(free);
       }
     }
 
-      console.log("wk after los", wynikKoncowy)
+    console.log("wk after los", wynikKoncowy);
 
     await Promise.all(
       wynikKoncowy.map(async (id, index) => {
         console.log(".......", id, index);
         let nextmatch;
-        if(max === 32){
-         nextmatch = outFromGroup2(index);
-        }else if( max === 16){
+        if (max === 32) {
+          nextmatch = outFromGroup2(index);
+        } else if (max === 16) {
           nextmatch = outFromGroup3(index);
-        }else if(max === 8 ){
+        } else if (max === 8) {
           nextmatch = outFromGroup4(index);
         }
 

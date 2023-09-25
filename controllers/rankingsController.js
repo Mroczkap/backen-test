@@ -129,6 +129,10 @@ const handleShow = async (req, res) => {
     //   useNewUrlParser: true,
     // }).connect();
     const idrankingu = req.query.idrankingu;
+    const user1 = req.query.user1;
+    const user2 = req.query.user2;
+
+    console.log("usery", user1, user2)
     //  console.log("id rankingu", idrankingu)
 
     // const db = mongoClient.db("druzyna");
@@ -147,15 +151,43 @@ const handleShow = async (req, res) => {
       index++;
       item.setspercent = item.winsets / item.sets;
       item.matchpercent = item.winmatch / item.match;
+      item.playerid = item.playerid.toString();
     });
 
-    const sorted = sortByProperty(
-      ranking,
-      "matchpercent",
-      "setspercent",
-      false
-    );
-    res.status(200).json(sorted);
+    console.log('rank', ranking)
+    
+    console.log("body",req.body)
+    if(user1 && user2){
+      console.log("udalo sie")
+
+    const idsToKeep = [user1._id, user2._id]; // Replace with the IDs you want to keep
+      console.log("keep", idsToKeep)
+    const filteredArray = ranking.filter((dataObject) => {
+      // Check if the 'id' of the dataObject exists in the 'idsToKeep' array
+      return idsToKeep.includes(dataObject.playerid);
+    });
+
+    console.log(filteredArray)
+    res.status(200).json(filteredArray);
+
+
+    }else{
+      const sorted = sortByProperty(
+        ranking,
+        "matchpercent",
+        "setspercent",
+        false
+      );
+      res.status(200).json(sorted);
+
+    }
+    
+
+
+
+
+
+   
   } catch (e) {
     res.send("Somethnig went wrong");
   }
