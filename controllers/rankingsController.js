@@ -133,7 +133,7 @@ const handleShow = async (req, res) => {
     const user2 = req.query.user2;
 
     console.log("usery", user1, user2)
-    //  console.log("id rankingu", idrankingu)
+    console.log("id rankingu", idrankingu)
 
     // const db = mongoClient.db("druzyna");
     const zawodniki = await db2.collection("zawodnik").find({}).toArray();
@@ -142,13 +142,17 @@ const handleShow = async (req, res) => {
       .collection("ranks")
       .find({ rankingid: new ObjectId(idrankingu) })
       .toArray();
-    // console.log("rankign", ranking)
+     console.log("rankign", ranking)
+     console.log("zawodniki",zawodniki);
     let index = 1;
     ranking.map((item) => {
       const zawodnik = zawodniki.find((zaw) => zaw._id.equals(item.playerid));
+      console.log("zaw", zawodnik)
       item.name = zawodnik.nazwisko + " " + zawodnik.imie;
       item.id = index;
       index++;
+
+      console.log("index", index)
       item.setspercent = item.winsets / item.sets;
       item.matchpercent = item.winmatch / item.match;
       item.playerid = item.playerid.toString();

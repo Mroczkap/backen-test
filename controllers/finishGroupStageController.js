@@ -79,12 +79,17 @@ const handleFinish = async (req, res) => {
       if (integerValue === 99) {
         let limit;
         floatNumber === 2 ? (limit = 4) : (limit = 8);
+console.log("limit", limit)
+
         if (wynikiGrupy.length < limit) {
           const wolne = limit - wynikiGrupy.length;
+          console.log("wolne",wolne)
           for (let i = 0; i < wolne; i++) {
+            console.log(free)
             wynikiGrupy.push({
               id: free,
               miejsce: limit - i,
+              grupid: grupa.grupid
             });
           }
         }
@@ -105,7 +110,7 @@ const handleFinish = async (req, res) => {
       });
     });
 
-    ///console.log(gru);
+    console.log("gru",gru);
 
     const groupedByMiejsce = {};
 

@@ -5,5 +5,6 @@ const saveRoundmatchController = require('../controllers/saveRoundmatchControlle
 router.route('/')
     .post(saveRoundmatchController.handleSave)
     .put(saveRoundmatchController.handleFree)
+    .get(saveRoundmatchController.handleAdd)
  
 module.exports = router;
