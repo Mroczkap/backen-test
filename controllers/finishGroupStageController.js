@@ -8,6 +8,7 @@ const {
   podliczWynikiGrupy,
   outFromGroup2,
   outFromGroup3,
+  outFromGroup35,
   outFromGroup4,
 } = require("../services/counting");
 
@@ -44,7 +45,7 @@ const handleFinish = async (req, res) => {
     console.log(integerValue);
     const free = await getFree();
     
-    
+    let limit;
     
     const asyncTasks = grupy.map(async (grupa) => {
       console.log("grupka", grupa._id);
@@ -68,7 +69,7 @@ const handleFinish = async (req, res) => {
       
       // Convert the array of bytes to a string
      
-
+     
       wynikiGrupy = await podliczWynikiGrupy(
         wynikiGrupy,
         grupa._id,
@@ -77,7 +78,7 @@ const handleFinish = async (req, res) => {
         grupa.grupid
       );
       if (integerValue === 99) {
-        let limit;
+        
         floatNumber === 2 ? (limit = 4) : (limit = 8);
 console.log("limit", limit)
 
@@ -205,7 +206,12 @@ console.log("limit", limit)
         if (max === 32) {
           nextmatch = outFromGroup2(index);
         } else if (max === 16) {
+          console.log("LLLLLLLLLLL", limit)
+          if(limit === 8){
+            nextmatch = outFromGroup35(index);
+          }else{
           nextmatch = outFromGroup3(index);
+          }
         } else if (max === 8) {
           nextmatch = outFromGroup4(index);
         }
