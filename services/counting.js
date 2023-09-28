@@ -107,7 +107,7 @@ const podliczMecz = (wynikiGrupy, mecz) => {
   });
   return wynikiGrupy;
 };
-
+//wychodiz 16 ale 8 grup
 const outFromGroup = (groupId, miejsce) => {
   const do18 = [
     [1, 8, 9, 16],
@@ -121,7 +121,7 @@ const outFromGroup = (groupId, miejsce) => {
   ];
   return do18[groupId][miejsce];
 };
-
+//wychodzi 16
 const outFromGroup2 = (miejsce) => {
   const out16 = [
     1, 8, 3, 5, 6, 4, 7, 2, 2, 7, 4, 6, 5, 3, 8, 1, 9, 16, 11, 13, 14, 12, 15,
@@ -129,17 +129,24 @@ const outFromGroup2 = (miejsce) => {
   ];
   return out16[miejsce];
 };
-
+//wychodzi 8 ale wiecej niż 2 grupy 
 const outFromGroup3 = (miejsce) => {
   const out8 = [1, 4, 3, 2, 4, 1, 2, 3, 5, 8, 7, 6, 8, 5, 6, 7];
   return out8[miejsce];
 };
-
+//wychodzi 8 ale 2 grupy
 const outFromGroup35 = (miejsce) => {
-  const out8 = [1, 4, 3, 2, 2, 3, 4, 1, 5, 8, 7, 6, 6, 7, 8];
+  const out8 = [1, 4, 3, 2, 2, 3, 4, 1, 5, 8, 7, 6, 6, 7, 8, 5];
   return out8[miejsce];
 };
 
+//wychodzi po 4 na ssekcje przy do 16 z 2 grup
+const outFromGroup32 = (miejsce) => {
+  const out8 = [1, 2, 2, 1, 3, 4, 4, 3, 5, 6, 6, 5, 7, 8, 8, 7];
+  return out8[miejsce];
+};
+
+//wychodzi 4
 const outFromGroup4 = (miejsce) => {
   const out4 = [1, 2, 2, 1, 3, 4, 4, 3];
   return out4[miejsce];
@@ -152,5 +159,6 @@ module.exports = {
   outFromGroup2,
   outFromGroup3,
   outFromGroup35,
+  outFromGroup32,
   outFromGroup4,
 };

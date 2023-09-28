@@ -8,6 +8,7 @@ const {
   podliczWynikiGrupy,
   outFromGroup2,
   outFromGroup3,
+  outFromGroup32,
   outFromGroup35,
   outFromGroup4,
 } = require("../services/counting");
@@ -182,7 +183,13 @@ console.log("limit", limit)
       runda = "1/2";
     } else if (wynikKoncowy.length <= 16) {
       max = 16;
-      runda = "1/4";
+
+      if(groupNo == 2){
+        runda = "1/2"
+      }else{
+        runda = "1/4";
+      }
+      
     } else {
       max = 32;
       runda = "1/8";
@@ -208,7 +215,11 @@ console.log("limit", limit)
         } else if (max === 16) {
           console.log("LLLLLLLLLLL", limit)
           if(limit === 8){
+            if(groupNo == 2){
+              nextmatch = outFromGroup32(index)
+            }else{
             nextmatch = outFromGroup35(index);
+            }
           }else{
           nextmatch = outFromGroup3(index);
           }

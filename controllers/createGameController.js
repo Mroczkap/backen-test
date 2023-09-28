@@ -78,7 +78,9 @@ const handleCreate = async (req, res) => {
           }
           if (records.length > 8) {
             liczbameczy = liczbameczy == 0 ? 8 : liczbameczy;
+            if(liczbagrup !== 2){
             await createround(db2, "1/4", liczbameczy, idzawodow);
+            }
           }
           liczbameczy = liczbameczy == 0 ? 4 : liczbameczy;
           await createround(db2, "1/2", liczbameczy, idzawodow);
