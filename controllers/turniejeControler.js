@@ -1,5 +1,5 @@
 const database = require("../services/db");
-const db = database.client.db('zawody')
+const db = database.client.db("zawody");
 
 const handleTurnieje = async (req, res) => {
   try {
@@ -14,7 +14,13 @@ const handleTurnieje = async (req, res) => {
       .sort({ _id: -1 })
       .project({ zawodnicy: 0, liczbagrup: 0 })
       .toArray();
-    
+
+    turnieje.map((turniej) => {
+      turniej.data = ` [${turniej.dataturneju.getDate()}-${
+        turniej.dataturneju.getMonth() + 1
+      }]`;
+    });
+
     // mongoClient.close(true);
     res.status(200).json(turnieje);
   } catch (e) {
