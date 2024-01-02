@@ -1,6 +1,11 @@
 const { ObjectId } = require("mongodb");
+require("dotenv").config();
+const database = require("./db");
+const db2 = database.client.db("druzyna");
 
 const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
+  const equal = [];
+
   wynikiGrupy.sort((a, b) => {
     if (b.wygrane - a.wygrane < 0) {
       return -1;
@@ -16,6 +21,14 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
         return 1;
       }
       if (b.sety - a.sety == 0) {
+        if (!equal.includes(a)) {
+          equal.push(a);
+        }
+
+        if (!equal.includes(b)) {
+          equal.push(b);
+        }
+
         const foundmecz = mecze.find(
           (item) =>
             (item.player1id.equals(b.id) || item.player2id.equals(b.id)) &&
@@ -35,6 +48,35 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
     }
   });
 
+  if (equal.length > 2) {
+    const indexes1 = equal.map((item) => wynikiGrupy.indexOf(item));
+    const minIndex = Math.min(...indexes1);
+
+    const rankid = await db2.collection("rankingi").find({opis: "Main"}).toArray();
+
+    const collection = db2.collection("ranks");
+    const ranks = await collection
+      .find({ rankingid: rankid[0]._id })
+      .toArray();
+
+    const ratios = ranks.map((player) => ({
+      playerid: player.playerid,
+      ratio: player.winmatch / player.match,
+    }));
+
+    equal.sort((a, b) => {
+      const ratioA = ratios.find((player) =>
+        player.playerid.equals(a.id)
+      ).ratio;
+      const ratioB = ratios.find((player) =>
+        player.playerid.equals(b.id)
+      ).ratio;
+      return ratioB - ratioA;
+    });
+
+    wynikiGrupy.splice(minIndex, equal.length, ...equal);
+  }
+
   wynikiGrupy.map((wynik, index) => {
     wynik.miejsce = index + 1;
     wynik.grupid = grupid;
@@ -51,7 +93,6 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
     zawodnicy.push(wynik.id);
   });
 
-  console.log("WWWW", wygrane, zawodnicy);
   await db.collection("grupy").findOneAndUpdate(
     { _id: new ObjectId(id) },
     {
@@ -63,7 +104,6 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
       },
     }
   );
-  console.log("dobiel");
   return wynikiGrupy;
 };
 
@@ -129,7 +169,7 @@ const outFromGroup2 = (miejsce) => {
   ];
   return out16[miejsce];
 };
-//wychodzi 8 ale wiecej niż 2 grupy 
+//wychodzi 8 ale wiecej niż 2 grupy
 const outFromGroup3 = (miejsce) => {
   const out8 = [1, 4, 3, 2, 4, 1, 2, 3, 5, 8, 7, 6, 8, 5, 6, 7];
   return out8[miejsce];

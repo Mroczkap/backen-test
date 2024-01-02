@@ -1,4 +1,4 @@
-const {ObjectId} = require("mongodb")
+const { ObjectId } = require("mongodb");
 
 const selectRound = (round, idmeczu) => {
   let match;
@@ -72,7 +72,13 @@ const final = (idmeczu) => {
   return [-1, 2 * idmeczu - 1, 2 * idmeczu];
 };
 
-const player1nextMatch = async (collecion, idzawodow, idmeczu, runda, wynik) => {
+const player1nextMatch = async (
+  collecion,
+  idzawodow,
+  idmeczu,
+  runda,
+  wynik
+) => {
   await collecion.findOneAndUpdate(
     {
       idzawodow: new ObjectId(idzawodow),
@@ -83,7 +89,13 @@ const player1nextMatch = async (collecion, idzawodow, idmeczu, runda, wynik) => 
   );
 };
 
-const player2nextMatch = async (collecion, idzawodow, idmeczu, runda, wynik) => {
+const player2nextMatch = async (
+  collecion,
+  idzawodow,
+  idmeczu,
+  runda,
+  wynik
+) => {
   await collecion.findOneAndUpdate(
     {
       idzawodow: new ObjectId(idzawodow),
@@ -95,7 +107,6 @@ const player2nextMatch = async (collecion, idzawodow, idmeczu, runda, wynik) => 
 };
 
 const saveResults = async (db, idzawodnika, miejsce, idzawodow) => {
-  console.log("jestem wsrodku", idzawodow, miejsce, idzawodnika);
   const result = await db.collection("wyniki").findOneAndUpdate(
     {
       idzawodow: idzawodow,
@@ -104,7 +115,7 @@ const saveResults = async (db, idzawodnika, miejsce, idzawodow) => {
     { $set: { idzawodnika: idzawodnika } }
   );
 
-  return result
+  return result;
 };
 
 module.exports = {

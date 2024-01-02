@@ -2,8 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const database = require("../services/db");
-const db = database.client.db('data')
-
+const db = database.client.db("data");
 
 const handleLogin = async (req, res) => {
   const { user, pwd } = req.body;
@@ -12,11 +11,6 @@ const handleLogin = async (req, res) => {
       .status(400)
       .json({ message: "Username and password are required." });
 
-  // const mongoClient = await new MongoClient(
-  //   process.env.MONGODB_URI,
-  //   {}
-  // ).connect();
-  // const db = mongoClient.db("data");
   const collection = db.collection("users");
   const results = await collection.find({ username: user }).toArray();
 

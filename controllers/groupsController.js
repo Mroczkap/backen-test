@@ -1,19 +1,12 @@
-const {ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const database = require("../services/db");
-const db = database.client.db('zawody')
-const db2 = database.client.db('druzyna')
+const db = database.client.db("zawody");
+const db2 = database.client.db("druzyna");
 
 const hanldeGroups = async (req, res) => {
   try {
     const wyn = [];
     const groupsid = [];
-    // const mongoClient = await new MongoClient(
-    //   process.env.MONGODB_URI,
-    //   {useNewUrlParser: true}
-    // ).connect();
-
-    // const db = mongoClient.db("zawody");
-    // const db2 = mongoClient.db("druzyna");
 
     //pobranie listy zawodników
     const zawodniki = await db2.collection("zawodnik").find({}).toArray();
@@ -50,7 +43,6 @@ const hanldeGroups = async (req, res) => {
     });
 
     wyn.push(grupy, mecze);
-    // mongoClient.close(true);
     res.status(200).json(wyn);
   } catch (e) {
     res.send("Somethnig went wrong");

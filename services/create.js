@@ -1,7 +1,7 @@
 const createGroups = (groupsno, contestno, zawodnicy) => {
   let x = contestno; // liczba zawodników
   let y = groupsno; // liczba grup
-  console.log("UUUUU",contestno, zawodnicy)
+
   let wynik;
   const groups = [];
   //pętlna dla y grup
@@ -13,18 +13,15 @@ const createGroups = (groupsno, contestno, zawodnicy) => {
       if (j % 2 == 0) {
         wynik = j * y - i + 1;
         if (wynik > x) break;
-        console.log(wynik);
         grupa.push(zawodnicy[wynik - 1]._id);
       } else {
         wynik = (j - 1) * y + i;
         if (wynik > x) break;
-        // console.log(wynik);
         grupa.push(zawodnicy[wynik - 1]._id);
       }
     }
     groups.push(grupa);
   }
-  console.log("UUUUU@", groups)
   return groups;
 };
 
@@ -32,8 +29,6 @@ const createGroupMatches = async (db, groups, idzawodow) => {
   let grupid = 0;
   groups.forEach(async (group) => {
     grupid++;
-    console.log("oszło");
-    console.log(group);
     const array = [];
     for (let j = 0; j < group.length; j++) {
       array.push(0);
@@ -60,6 +55,7 @@ const createGroupMatches = async (db, groups, idzawodow) => {
               player2id: group[j],
               player1sets: 0,
               player2sets: 0,
+              inprogress: false,
             });
           }
         }
@@ -77,12 +73,12 @@ const createround = async (db, round, liczbameczy, idzawodow) => {
       player2id: "",
       player1sets: 0,
       player2sets: 0,
+      inprogress: false,
     });
   }
 };
 
 const createResults = async (db, idzawodow, liczbazawodników) => {
-  console.log("dsfsdfdsfds", idzawodow, liczbazawodników);
   for (let i = 0; i < liczbazawodników; i++) {
     await db.collection("wyniki").insertOne({
       idzawodow: idzawodow,

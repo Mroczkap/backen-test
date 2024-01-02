@@ -3,19 +3,14 @@ require("dotenv").config();
 const database = require("../services/db");
 const db = database.client.db("zawody");
 const db2 = database.client.db("druzyna");
-const { addtorankingarray } = require("../services/ranking");
+const { addtorankingarray, addtopair } = require("../services/ranking");
 const { daysInWeek } = require("date-fns");
 
 const handleAdd = async (req, res) => {
   try {
-    console.log("połesz");
     const { player1sets, player2sets, player1id, player2id, rankingid } =
       req.body.params;
-
-    console.log("b", req.body);
-
-    console.log("kkkk", player1sets);
-    await db.collection("mecze").insertOne({
+    const insert = await db.collection("mecze").insertOne({
       date: new Date(),
       player1id: new ObjectId(player1id),
       player2id: new ObjectId(player2id),
@@ -33,7 +28,15 @@ const handleAdd = async (req, res) => {
       let p2 = 0;
 
       player1sets === 3 ? (p1 = 1) : (p2 = 1);
-      console.log(sety, p1, p2);
+
+      addtopair(
+        insert.insertedId,
+        player1sets,
+        player2sets,
+        new ObjectId(player1id),
+        new ObjectId(player2id),
+        sety
+      );
       result = addtorankingarray(
         result,
         new ObjectId(player1id),
@@ -50,16 +53,13 @@ const handleAdd = async (req, res) => {
         p2
       );
     }
-    console.log("tutajx", result);
     const collection = db2.collection("ranks");
     await Promise.all(
       result.map(async (item) => {
-        console.log("Mapping..."); //
         const filter = {
           playerid: new ObjectId(item.playerid),
           rankingid: new ObjectId(rankingid),
         };
-        console.log("filter", filter);
         const rank = await collection.findOne(filter);
 
         const field = {
@@ -71,7 +71,7 @@ const handleAdd = async (req, res) => {
           winmatch: item.winmatch,
         };
 
-      
+        daysInWeek;
 
         if (rank) {
           await collection.findOneAndUpdate(filter, {
@@ -88,7 +88,6 @@ const handleAdd = async (req, res) => {
       })
     );
 
-    //  mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");
@@ -96,17 +95,10 @@ const handleAdd = async (req, res) => {
 };
 const handleShow = async (req, res) => {
   try {
-
-    console.log(req.query)
     const date = req.query.date;
-    console.log("data",date)
-    const startDate = new Date(date);// Define your start date
+    const startDate = new Date(date); // Define your start date
     const endDate = new Date(date);
-    console.log(startDate.getDate())
-    endDate.setDate(endDate.getDate() + 1)
-    console.log(startDate)
-    console.log(endDate)
-
+    endDate.setDate(endDate.getDate() + 1);
     const zawodniki = await db2.collection("zawodnik").find({}).toArray();
 
     const mecze = await db
@@ -120,18 +112,33 @@ const handleShow = async (req, res) => {
       .sort({ date: 1 })
       .toArray();
 
-      mecze.map((mecz) => {
-        let zawodnik = zawodniki.find((zaw) => zaw._id.equals(mecz.player1id));
-        mecz.player1name = zawodnik.imie + " " + zawodnik.nazwisko;
-        zawodnik = zawodniki.find((zaw) => zaw._id.equals(mecz.player2id));
-        mecz.player2name = zawodnik.imie + " " + zawodnik.nazwisko;
-      });
+    mecze.map((mecz) => {
+      let zawodnik = zawodniki.find((zaw) => zaw._id.equals(mecz.player1id));
+      mecz.player1name = zawodnik.imie + " " + zawodnik.nazwisko;
+      zawodnik = zawodniki.find((zaw) => zaw._id.equals(mecz.player2id));
+      mecz.player2name = zawodnik.imie + " " + zawodnik.nazwisko;
+    });
 
-     
-      res.status(200).json(mecze);
+    res.status(200).json(mecze);
   } catch (e) {
     res.send("Somethnig went wrong");
   }
 };
 
-module.exports = { handleShow, handleAdd };
+const handleProgress = async (req, res) => {
+  try {
+    let id = req.body[0].toString();
+    await db
+      .collection("mecze")
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { inprogress: req.body[1] } }
+      );
+
+    res.status(200).json(res);
+  } catch (e) {
+    res.send("Somethnig went wrong");
+  }
+};
+
+module.exports = { handleShow, handleAdd, handleProgress };

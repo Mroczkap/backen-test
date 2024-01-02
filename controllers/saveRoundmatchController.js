@@ -1,8 +1,8 @@
-const {ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 require("dotenv").config();
 const database = require("../services/db");
-const db = database.client.db('zawody')
-const {getFree} = require('../services/free')
+const db = database.client.db("zawody");
+const { getFree } = require("../services/free");
 const {
   player1nextMatch,
   player2nextMatch,
@@ -12,11 +12,6 @@ const {
 
 const handleSave = async (req, res) => {
   try {
-    // const mongoClient = await new MongoClient(
-    //   process.env.MONGODB_URI,
-    //   {useNewUrlParser: true}
-    // ).connect();
-
     /* 
     req.body:
     [0] idmeczu
@@ -29,7 +24,6 @@ const handleSave = async (req, res) => {
     [7] idzawodów
     [8] nrmeczu
     */
-    // const db = mongoClient.db("zawody");
     const collecion = db.collection("mecze");
     let id = req.body[0].toString();
     await collecion.findOneAndUpdate(
@@ -37,10 +31,7 @@ const handleSave = async (req, res) => {
       { $set: { player1sets: req.body[1], player2sets: req.body[2] } }
     );
     let runda = req.body[4].toString();
-
     const nextmatch = selectRound(runda, req.body[8]);
-
-    console.log("co zawraca mecze", nextmatch);
 
     if (req.body[1] == 3 && nextmatch[0] == 1) {
       await player1nextMatch(
@@ -50,7 +41,7 @@ const handleSave = async (req, res) => {
         runda,
         new ObjectId(req.body[5])
       );
-      await  player1nextMatch(
+      await player1nextMatch(
         collecion,
         new ObjectId(req.body[7]),
         nextmatch[2],
@@ -60,7 +51,7 @@ const handleSave = async (req, res) => {
     }
 
     if (req.body[2] == 3 && nextmatch[0] == 1) {
-      await  player1nextMatch(
+      await player1nextMatch(
         collecion,
         new ObjectId(req.body[7]),
         nextmatch[1],
@@ -99,7 +90,7 @@ const handleSave = async (req, res) => {
         runda,
         new ObjectId(req.body[6])
       );
-      await  player2nextMatch(
+      await player2nextMatch(
         collecion,
         new ObjectId(req.body[7]),
         nextmatch[2],
@@ -111,7 +102,7 @@ const handleSave = async (req, res) => {
     if (nextmatch[0] == -1) {
       if (req.body[1] == 3) {
         await saveResults(
-          db, //tutaj zapis do wyników
+          db,
           new ObjectId(req.body[5]),
           nextmatch[1],
           new ObjectId(req.body[7])
@@ -140,7 +131,6 @@ const handleSave = async (req, res) => {
       }
     }
 
-  //  mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");
@@ -149,11 +139,6 @@ const handleSave = async (req, res) => {
 
 const handleFree = async (req, res) => {
   try {
-    // const mongoClient = await new MongoClient(
-    //   process.env.MONGODB_URI,
-    //   {useNewUrlParser: true}
-    // ).connect();
-
     /* 
     req.body:
     [0] idmeczu
@@ -166,29 +151,19 @@ const handleFree = async (req, res) => {
     [7] idzawodów
     [8] nrmeczu
     */
-    // const db = mongoClient.db("zawody");
+
     const collecion = db.collection("mecze");
     const free = await getFree();
-    const stringFree = free.toString(); 
+    const stringFree = free.toString();
     let runda = req.body[4].toString();
 
     const nextmatch = selectRound(runda, req.body[8]);
-    if(req.body[5] == stringFree ||
-      req.body[6] == stringFree)
-      {
-        console.log("zczytało odpowienio", free)
-      }
-    console.log("co zawraca mecze", nextmatch);
-    const human =
-      req.body[5] == stringFree ? req.body[6] : req.body[5];
-    console.log("human", human);
+    const human = req.body[5] == stringFree ? req.body[6] : req.body[5];
 
     if (
-      (req.body[5] == stringFree ||
-        req.body[6] == stringFree) &&
+      (req.body[5] == stringFree || req.body[6] == stringFree) &&
       nextmatch[0] == 1
     ) {
-
       await player1nextMatch(
         collecion,
         new ObjectId(req.body[7]),
@@ -206,8 +181,7 @@ const handleFree = async (req, res) => {
     }
 
     if (
-      (req.body[5] == stringFree ||
-        req.body[6] == stringFree) &&
+      (req.body[5] == stringFree || req.body[6] == stringFree) &&
       nextmatch[0] == 2
     ) {
       await player2nextMatch(
@@ -241,13 +215,10 @@ const handleFree = async (req, res) => {
       },
       { $set: { saved: true } }
     );
-
-    // mongoClient.close(true);
     res.status(200).json(res);
   } catch (e) {
     res.send("Somethnig went wrong");
   }
 };
-
 
 module.exports = { handleSave, handleFree };

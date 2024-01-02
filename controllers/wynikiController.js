@@ -1,22 +1,15 @@
 const { ObjectId } = require("mongodb");
 const database = require("../services/db");
-const db = database.client.db('zawody')
-const db2 = database.client.db('druzyna')
+const db = database.client.db("zawody");
+const db2 = database.client.db("druzyna");
 
 const handleWyniki = async (req, res) => {
   try {
-    // const mongoClient = await new MongoClient(
-    //   process.env.MONGODB_URI,
-    //   {useNewUrlParser: true}
-    // ).connect();
-    // const db = mongoClient.db("zawody");
     const collection = db.collection("wyniki");
     const wyniki = await collection
       .find({ idzawodow: new ObjectId(req.query.idzawodow) })
       .sort({ miejsce: 1 })
       .toArray();
-
-    // const db2 = mongoClient.db("druzyna");
     const zawodniki = await db2.collection("zawodnik").find({}).toArray();
     wyniki.map((wynik) => {
       let zawodnik = zawodniki.find((zaw) => zaw._id.equals(wynik.idzawodnika));
@@ -26,8 +19,6 @@ const handleWyniki = async (req, res) => {
         wynik.nazwisko = zawodnik.nazwisko;
       }
     });
-
-    // mongoClient.close(true);
     res.status(200).json(wyniki);
   } catch (e) {
     res.send("Somethnig went wrong");
