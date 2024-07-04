@@ -56,6 +56,7 @@ app.use("/createGame", require("./routes/createGame"));
 app.use("/finishgroupstage", require("./routes/finishgroupstage"));
 app.use("/rankings", require("./routes/rankings"));
 app.use("/singleMatch", require("./routes/singleMatch"));
+app.use("/cykle", require("./routes/cykle"));
 
 app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));

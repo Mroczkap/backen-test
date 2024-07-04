@@ -11,10 +11,12 @@ const {
   outFromGroup32,
   outFromGroup35,
   outFromGroup4,
+  outFrom4Group,
 } = require("../services/counting");
 
 const handleFinish = async (req, res) => {
   try {
+    console.log("body", req.body)
     const idzawodow = req.query.idzawodow;
     const groupOut = req.body[0];
     const grupy = await db
@@ -26,13 +28,16 @@ const handleFinish = async (req, res) => {
     const groupNo = grupy.length;
     const gru = [];
     let integerValue;
-
+    ////////////          12/ 4
     const floatNumber = groupOut / groupNo;
     if (Number.isInteger(floatNumber)) {
       integerValue = 99;
     } else {
       integerValue = Math.trunc(floatNumber);
     }
+
+    console.log("int", integerValue)
+    console.log("float", floatNumber)
 
     const free = await getFree();
     let limit;
@@ -50,7 +55,7 @@ const handleFinish = async (req, res) => {
           return res.status(203).json(res);
         }
       });
-
+ 
       wynikiGrupy = await podliczWynikiGrupy(
         wynikiGrupy,
         grupa._id,
@@ -58,9 +63,14 @@ const handleFinish = async (req, res) => {
         mecze,
         grupa.grupid
       );
+ 
       if (integerValue === 99) {
-        floatNumber === 2 ? (limit = 4) : (limit = 8);
-
+        if (floatNumber === 2) limit = 4;
+        else if (floatNumber === 3) limit = 6;
+        else {
+          limit = 8;
+        }
+   
         if (wynikiGrupy.length < limit) {
           const wolne = limit - wynikiGrupy.length;
           for (let i = 0; i < wolne; i++) {
@@ -72,12 +82,11 @@ const handleFinish = async (req, res) => {
           }
         }
       }
-
       return gru.push(wynikiGrupy);
     });
 
     await Promise.all(asyncTasks);
-
+    console.log("gru", gru)
     gru.forEach((subarray) => {
       const ile = subarray.length;
       subarray.forEach((item) => {
@@ -101,6 +110,8 @@ const handleFinish = async (req, res) => {
         });
       });
     });
+
+   /////////////////////
 
     const result = Object.entries(groupedByMiejsce).map(([miejsce, items]) => ({
       miejsce: parseInt(miejsce),
@@ -144,6 +155,9 @@ const handleFinish = async (req, res) => {
       } else {
         runda = "1/4";
       }
+    } else if (wynikKoncowy.length <= 24 && groupNo == 4) {
+      max = 24;
+      runda = "1/4";
     } else {
       max = 32;
       runda = "1/8";
@@ -173,7 +187,10 @@ const handleFinish = async (req, res) => {
           }
         } else if (max === 8) {
           nextmatch = outFromGroup4(index);
+        } else if (max === 24) {
+          nextmatch = outFrom4Group(index);
         }
+
         if (index % 2 == 0) {
           await db.collection("mecze").findOneAndUpdate(
             {

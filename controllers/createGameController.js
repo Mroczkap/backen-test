@@ -56,11 +56,15 @@ const handleCreate = async (req, res) => {
         let liczbameczy = 0;
         await createGroupMatches(db2, groups, idzawodow);
         if (type !== 4) {
-          if (records.length > 16) {
-            liczbameczy = 16;
-            await createround(db2, "1/8", liczbameczy, idzawodow);
+          if (liczbazawodników > 16) {
+            if (liczbazawodników <= 24 && liczbagrup === 4) {
+              liczbameczy = 12;
+            } else {
+              liczbameczy = 16;
+              await createround(db2, "1/8", liczbameczy, idzawodow);
+            }
           }
-          if (records.length > 8) {
+          if (liczbazawodników > 8) {
             liczbameczy = liczbameczy == 0 ? 8 : liczbameczy;
             if (liczbagrup !== 2) {
               await createround(db2, "1/4", liczbameczy, idzawodow);

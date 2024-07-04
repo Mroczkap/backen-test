@@ -27,11 +27,11 @@ const getAllZawodnicy = async (req, res) => {
 const createNewZawodnik = async (req, res) => {
   try {
     await db.collection("zawodnik").insertOne({
-      imie: req.body.firstname,
-      nazwisko: req.body.secondname,
-      plec: req.body.gender,
-      wiek: parseInt(req.body.old),
-      okladziny: req.body.palete,
+      imie: req.body.imie,
+      nazwisko: req.body.nazwisko,
+      plec: req.body.plec,
+      wiek: parseInt(req.body.wiek),
+      okladziny: req.body.okladziny,
       ranking: parseInt(req.body.ranking),
       usuniety: false,
     });
@@ -47,11 +47,11 @@ const updateZawodnik = async (req, res) => {
       { _id: new ObjectId(req.query.id) },
       {
         $set: {
-          imie: req.body.firstname,
-          nazwisko: req.body.secondname,
-          plec: req.body.gender,
-          wiek: parseInt(req.body.old),
-          okladziny: req.body.palete,
+          imie: req.body.imie,
+          nazwisko: req.body.nazwisko,
+          plec: req.body.plec,
+          wiek: parseInt(req.body.wiek),
+          okladziny: req.body.okladziny,
           ranking: parseInt(req.body.ranking),
         },
       }

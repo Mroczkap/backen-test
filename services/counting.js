@@ -52,13 +52,13 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
     const indexes1 = equal.map((item) => wynikiGrupy.indexOf(item));
     const minIndex = Math.min(...indexes1);
 
-    const rankid = await db2.collection("rankingi").find({opis: "Main"}).toArray();
-
-    const collection = db2.collection("ranks");
-    const ranks = await collection
-      .find({ rankingid: rankid[0]._id })
+    const rankid = await db2
+      .collection("rankingi")
+      .find({ opis: "Main" })
       .toArray();
 
+    const collection = db2.collection("ranks");
+    const ranks = await collection.find({ rankingid: rankid[0]._id }).toArray();
     const ratios = ranks.map((player) => ({
       playerid: player.playerid,
       ratio: player.winmatch / player.match,
@@ -104,6 +104,7 @@ const podliczWynikiGrupy = async (wynikiGrupy, id, db, mecze, grupid) => {
       },
     }
   );
+
   return wynikiGrupy;
 };
 
@@ -161,6 +162,15 @@ const outFromGroup = (groupId, miejsce) => {
   ];
   return do18[groupId][miejsce];
 };
+
+//wychodiz z 4 grup do 24
+const outFrom4Group = (miejsce) => {
+  const do14 = [
+    1, 4, 3, 2, 4, 1, 2, 3, 5, 8, 7, 6, 8, 5, 6, 7, 9, 12, 11, 10, 12, 9, 10,
+    11,
+  ];
+  return do14[miejsce];
+};
 //wychodzi 16
 const outFromGroup2 = (miejsce) => {
   const out16 = [
@@ -201,4 +211,5 @@ module.exports = {
   outFromGroup35,
   outFromGroup32,
   outFromGroup4,
+  outFrom4Group,
 };
