@@ -1,55 +1,82 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
-const database = require("../services/db");
-const db = database.client.db("data");
+const authService = require('../services/authService');
+const { validateLoginInput } = require('../middleware/validateInput');
+const userService = require('../services/userService');
+const tokenService = require('../services/tokenService');
 
 const handleLogin = async (req, res) => {
-  const { user, pwd } = req.body;
-  if (!user || !pwd)
-    return res
-      .status(400)
-      .json({ message: "Username and password are required." });
+  try {
+    const { error } = validateLoginInput(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
-  const collection = db.collection("users");
-  const results = await collection.find({ username: user }).toArray();
+    const { user, pwd } = req.body;
+    const authResult = await authService.authenticateUser(user, pwd);
 
-  if (results.length != 1) return res.sendStatus(401);
-
-  const match = await bcrypt.compare(pwd, results[0]?.password);
-  if (match) {
-    const roles = Object.values(results[0].roles);
-    const accessToken = jwt.sign(
-      {
-        UserInfo: {
-          username: results[0].username,
-          roles: roles,
-        },
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "30s" }
-    );
-    const refreshToken = jwt.sign(
-      { username: results[0].username },
-      process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "1d" }
-    );
-    await db
-      .collection("users")
-      .findOneAndUpdate(
-        { _id: results[0]._id },
-        { $set: { refreshToken: refreshToken, lastLogin: new Date() } }
-      );
-    res.cookie("jwt", refreshToken, {
-      httpOnly: true,
-      sameSite: "None",
-      secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-    res.json({ roles, accessToken });
-  } else {
-    res.sendStatus(401);
+    if (authResult.success) {
+      res.cookie('jwt', authResult.refreshToken, {
+        httpOnly: true,
+        sameSite: 'None',
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      res.json({ roles: authResult.roles, accessToken: authResult.accessToken });
+    } else {
+      res.status(401).json({ message: 'Authentication failed' });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-module.exports = { handleLogin };
+const handleLogout = async (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) {
+    return res.sendStatus(204); // No content
+  }
+  const refreshToken = cookies.jwt;
+
+  try {
+    const foundUser = await userService.removeRefreshToken(refreshToken);
+
+    if (!foundUser) {
+      res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+      return res.sendStatus(204);
+    }
+
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+    res.sendStatus(204);
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const handleRefreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.jwt;
+    if (!refreshToken) {
+      return res.sendStatus(401);
+    }
+
+    const user = await userService.findUserByRefreshToken(refreshToken);
+    if (!user) {
+      return res.sendStatus(403);
+    }
+
+    const decodedToken = await tokenService.verifyRefreshToken(refreshToken);
+    if (!decodedToken || user.username !== decodedToken.username) {
+      return res.sendStatus(403);
+    }
+
+    const roles = Object.values(user.roles);
+    const accessToken = tokenService.generateAccessToken(user.username, roles);
+
+    res.json({ roles, accessToken });
+  } catch (error) {
+    console.error('Error in handleRefreshToken:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+module.exports = { handleLogin, handleLogout, handleRefreshToken };

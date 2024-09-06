@@ -40,26 +40,16 @@ app.use("/", express.static(path.join(__dirname, "/public")));
 
 // routes
 app.use("/", require("./routes/root"));
-app.use("/register", require("./routes/register"));
-app.use("/auth", require("./routes/auth"));
-app.use("/refresh", require("./routes/refresh"));
-app.use("/logout", require("./routes/logout"));
-app.use("/turnieje", require("./routes/turnieje"));
-app.use("/groups", require("./routes/groups"));
-app.use("/roundMatch", require("./routes/roundMatch"));
-app.use("/wyniki", require("./routes/wyniki"));
-app.use("/zawodnicy", require("./routes/zawodnicy"));
-app.use("/saveGroupmatch", require("./routes/saveGroupmatch"));
-app.use("/finishgroup", require("./routes/finishgroup"));
-app.use("/saveRoundmatch", require("./routes/saveRoundmatch"));
-app.use("/createGame", require("./routes/createGame"));
-app.use("/finishgroupstage", require("./routes/finishgroupstage"));
-app.use("/rankings", require("./routes/rankings"));
-app.use("/singleMatch", require("./routes/singleMatch"));
-app.use("/cykle", require("./routes/cykle"));
+app.use("/cycles", require("./routes/cycleRoutes"));
+app.use("/groups", require("./routes/groupRoutes"));
+app.use("/results", require("./routes/resultsRoutes"));
+app.use("/auth", require("./routes/authRoutes"));
+app.use("/players", require("./routes/playerRoutes"));
+app.use("/tournament", require("./routes/tournamentRoutes"));
+app.use("/match", require("./routes/matchRoutes"));
+app.use("/rankings", require("./routes/rankingRoutes"));
 
 app.use(verifyJWT);
-app.use("/employees", require("./routes/api/employees"));
 
   
 
