@@ -92,6 +92,7 @@ const handleGroupTypeOther = async (wynikiGrupy, idzawodow) => {
 };
 
 const finishAllGroups = async (idzawodow, groupOut) => {
+
   const grupy = await groupRepository.getGroupsByCompetitionId(idzawodow);
   const groupNo = grupy.length;
   const gru = [];
@@ -99,16 +100,19 @@ const finishAllGroups = async (idzawodow, groupOut) => {
   const integerValue = Number.isInteger(floatNumber)
     ? 99
     : Math.trunc(floatNumber);
+   
   const free = await playerRepository.getFree();
+  
   let limit = calculateLimit(floatNumber);
-
+ 
   await processGroups(grupy, gru, integerValue, limit, free);
-
+  
   const groupedByMiejsce = groupByMiejsce(gru);
   const result = prepareResult(groupedByMiejsce);
   const wynikKoncowy = prepareWynikKoncowy(result, integerValue, free);
   const { max, runda } = determineMaxAndRound(wynikKoncowy.length, groupNo);
-  await updateMatches(wynikKoncowy, max, runda, idzawodow, free);
+  await updateMatches(wynikKoncowy, max, runda, idzawodow, free, limit);
+
   return { success: true };
 };
 
@@ -169,13 +173,14 @@ const processGroups = async (grupy, gru, integerValue, limit, free) => {
   }
 };
 
-const updateMatches = async (wynikKoncowy, max, runda, idzawodow, free) => {
+const updateMatches = async (wynikKoncowy, max, runda, idzawodow, free, limit) => {
   if (wynikKoncowy.length < max) {
     const wolne = max - wynikKoncowy.length;
     for (let i = 0; i < wolne; i++) {
       wynikKoncowy.push(free);
     }
   }
+
   for (let index = 0; index < wynikKoncowy.length; index++) {
     const id = wynikKoncowy[index];
     let nextmatch;
